@@ -107,8 +107,14 @@ define([
     /**
      * Update the integrator
      */
-    tick: function() {
-      this.integrator.step(arguments.length === 0 ? 1 : arguments[0]);
+    tick: function(step, jump) {
+      step = step || 1;
+      jump = jump || 1;
+
+      for (var i = jump - 1; i >= 0; i--) {
+        this.integrator.step(step);
+      };
+
       if (this.__optimized) {
         this.__equilibrium = !this.needsUpdate();
       }

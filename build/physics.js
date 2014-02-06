@@ -286,6 +286,8 @@ root.Physics = Physics = (function (ParticleSystem, raf, _) {
 
     this.equilibriumCallbacks = [];
 
+    this.updateStep = 1;
+
     update.call(this);
 
   };
@@ -301,7 +303,9 @@ root.Physics = Physics = (function (ParticleSystem, raf, _) {
     /**
      * Play the animation loop. Doesn't affect whether in equilibrium or not.
      */
-    play: function() {
+    play: function(updateStep) {
+
+      this.updateStep = updateStep || 1;
 
       if (this.playing) {
         return this;
@@ -333,7 +337,7 @@ root.Physics = Physics = (function (ParticleSystem, raf, _) {
       if (this.playing) {
         this.pause();
       } else {
-        this.play();
+        this.play(this.updateStep);
       }
 
       return this;
@@ -390,7 +394,9 @@ root.Physics = Physics = (function (ParticleSystem, raf, _) {
 
     var _this = this;
 
-    this.tick();
+    this.tick(1, this.updateStep);
+
+
 
     _.each(this.animations, function(a) {
       a();
@@ -518,8 +524,14 @@ root.Physics = Physics = (function (ParticleSystem, raf, _) {
     /**
      * Update the integrator
      */
-    tick: function() {
-      this.integrator.step(arguments.length === 0 ? 1 : arguments[0]);
+    tick: function(step, jump) {
+      step = step || 1;
+      jump = jump || 1;
+
+      for (var i = jump - 1; i >= 0; i--) {
+        this.integrator.step(step);
+      };
+
       if (this.__optimized) {
         this.__equilibrium = !this.needsUpdate();
       }

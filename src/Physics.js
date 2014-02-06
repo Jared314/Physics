@@ -23,6 +23,8 @@ define([
 
     this.equilibriumCallbacks = [];
 
+    this.updateStep = 1;
+
     update.call(this);
 
   };
@@ -38,7 +40,9 @@ define([
     /**
      * Play the animation loop. Doesn't affect whether in equilibrium or not.
      */
-    play: function() {
+    play: function(updateStep) {
+
+      this.updateStep = updateStep || 1;
 
       if (this.playing) {
         return this;
@@ -70,7 +74,7 @@ define([
       if (this.playing) {
         this.pause();
       } else {
-        this.play();
+        this.play(this.updateStep);
       }
 
       return this;
@@ -127,7 +131,9 @@ define([
 
     var _this = this;
 
-    this.tick();
+    this.tick(1, this.updateStep);
+
+
 
     _.each(this.animations, function(a) {
       a();
